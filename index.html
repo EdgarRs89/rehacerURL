@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Desacortador de URLs</title>
+</head>
+<body>
+    <h1>Desacortador de URLs con Rebrandly</h1>
+    <label for="urlList">Ingresa las URLs acortadas separadas por punto y coma (;):</label><br>
+    <textarea id="urlList" rows="4" cols="50"></textarea><br>
+    <button onclick="desacortar()">Desacortar URLs</button><br>
+    <div id="resultado"></div>
+
+    <script>
+        async function desacortar() {
+            const listaURLs = document.getElementById('urlList').value.split(';').map(url => url.trim());
+            const resultadoDiv = document.getElementById('resultado');
+            resultadoDiv.innerHTML = '';
+
+            for (const url of listaURLs) {
+                try {
+                    const urlReal = await obtenerURLReal(url);
+                    const parrafo = document.createElement('p');
+                    parrafo.textContent = urlReal;
+                    resultadoDiv.appendChild(parrafo);
+                } catch (error) {
+                    console.error('Error al obtener la URL real:', error);
+                }
+            }
+        }
+
+        async function obtenerURLReal(url) {
+            const apiKey = 'c27f1b54bb61435c92538a0e49f43f0c'; // Reemplaza con tu propia API Key de Rebrandly
+            const apiUrl = `https://api.rebrandly.com/v1/links/decode?url=${url}`;
+            const response = await fetch(apiUrl, {
+                headers: {
+                    'apikey': apiKey
+                }
+            });
+            const data = await response.json();
+            return data.destination;
+        }
+    </script>
+</body>
+</html>
